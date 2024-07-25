@@ -29,7 +29,7 @@ function SidebarRecep() {
   return (
     <div className='sidebar'>
       <div className="top">
-        <Link to={'/doctor/dashboard'} style={{ textDecoration: "none" }}>
+        <Link to={'/recep/dashboard'} style={{ textDecoration: "none" }}>
           <span className="logo">Receptionist</span>
         </Link>
       </div>

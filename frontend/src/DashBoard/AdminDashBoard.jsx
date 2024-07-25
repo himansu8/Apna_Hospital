@@ -3,7 +3,7 @@ import './admindashboard.scss';
 import axios from 'axios';
 import moment from 'moment';
 import Patientdata from '../components/Patientdata';
-
+import { toast } from "react-toastify";
 function AdminDashBoard() {
   const [doctorData, setDoctorData] = useState([]);
   const [receptionist, setReceptionist] = useState([]);
@@ -13,31 +13,58 @@ function AdminDashBoard() {
   const [mobileNumber, setMobileNumber] = useState('');
   const [patientData, setPatientData] = useState(null);
   const [open, setOpen] = useState(false);
-  const [show, setShow] = useState(false);
+ // const [show, setShow] = useState(false);
 
-  const toggleMenu = () => {
-    setShow(!show);
-  };
+  // const toggleMenu = () => {
+  //   setShow(!show);
+  // };
 
   const [error, setError] = useState('');
 
-    const handleSearch = async () => {
-        try {
-            const response = await axios.get(`/api/patient/data/search?mobileNumber=${mobileNumber}`);
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(`/api/patient/data/search?mobileNumber=${mobileNumber}`);
 
-            if (response.status === 200) {
-                setPatientData(response.data);
-                setError('');
-            } else {
-                setError('Patient not found');
-                setPatientData(null);
-            }
-        } catch (error) {
-            console.error(error);
-            setError('Something went wrong');
-            setPatientData(null);
-        }
-    };
+      if (response.status === 200) {
+        setOpen(true)
+        setPatientData(response.data);
+        setError('');
+      } else {
+        setError('Patient not found');
+        setPatientData(null);
+        setOpen(false)
+
+      }
+    } catch (error) {
+      console.error(error);
+      let errorString = "";
+      //handling express validator errors
+      if (error.response.data.errors) {
+        error.response.data.errors.forEach((ele) => {
+          errorString += `${ele.msg} `
+        })
+        // showAlert({
+        //   type: "error",
+        //   msg: errorString
+        // })
+        //window.alert(errorString)
+        toast.error(errorString);
+
+      }
+      else {
+        //Custom errors
+        errorString = error.response.data.error;
+        // showAlert({
+        //   type: "error",
+        //   msg: errorString
+        // })
+        //window.alert(errorString)
+        toast.error(errorString);
+      }
+      // setError('Something went wrong');
+      // setPatientData(null);
+    }
+  };
   async function fetchDoctor() {
     try {
       let res = await axios.get('/api/doctor');
@@ -80,14 +107,14 @@ function AdminDashBoard() {
 
   return (
     <>
-      
+
       <div className='admindashboard'>
-      <div className='searchPatient'>
-        <input type='text' placeholder='Patient mobile number' value={mobileNumber} onChange={(e)=> setMobileNumber(e.target.value)}></input>
-        <button className='searchBtn'  onClick={() =>{handleSearch(); setOpen(true);}}>Search</button>
-      </div>
+        <div className='searchPatient'>
+          <input type='text' placeholder='Patient mobile number' value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)}></input>
+          <button className='searchBtn' onClick={() => { handleSearch() }}>Search</button>
+        </div>
         <div className="header">
-          <h1 className='sm-f-24' style={{marginTop:"10PX"}}>Welcome to Apna Hospital</h1>
+          <h1 className='sm-f-24' style={{ marginTop: "10PX" }}>Welcome to Apna Hospital</h1>
         </div>
         <div className="logo">
           <img src="/logo1.png" alt="logo" className="logo-img" />

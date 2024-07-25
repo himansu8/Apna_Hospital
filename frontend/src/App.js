@@ -55,6 +55,15 @@ function App() {
     }
     return children;
   }
+
+  const ProtectedRouteAll = ({ children }) => {
+    const { user } = useContext(AuthContext)
+   
+    if (!user || (user.role !== 'doctor' && user.role !== 'receptionist' && user.role !== 'admin')) {
+      return <Navigate to='/' />;
+    }
+    return children;
+  }
   return (
     <>
       <BrowserRouter>
@@ -69,8 +78,7 @@ function App() {
 
           <Route path="/about" element={<><Navbar /><About /> <Footer /></>} />
 
-          <Route path="/prescription" element={<><Prescription /> </>} />
-
+          <Route path="/prescription" element={<><ProtectedRouteAll><Prescription /></ProtectedRouteAll> </>} />
 
           <Route path="/admin/dashboard" element={<><ProtectedRouteAdmin ><AdminPage type="admin" /></ProtectedRouteAdmin></>} />
           <Route path="/doctor/dashboard" element={<><ProtectedRoute ><AdminPage type="doctor"/></ProtectedRoute></>} />
@@ -108,7 +116,6 @@ function App() {
           <Route path="/recep/messages" element={<><ProtectedRouteRecep><MessagePage type="recep"/></ProtectedRouteRecep></>} />
 
           <Route path="/jinu" element={<><Prescription/></>} />
-
 
         </Routes>
         <ToastContainer position="top-center" />
